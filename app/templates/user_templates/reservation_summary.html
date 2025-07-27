@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4" style="color: #007bff; font-weight: 700;">📊 Summary</h2>
+    <div class="row text-center my-4">
+        <div class="col-md-6">
+            <div class="card border-info">
+                <div class="card-body">
+                    <h5>Total Reservations</h5>
+                    <h3>{{ summary.reservations }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-success">
+                <div class="card-body">
+                    <h5>Total Cost</h5>
+                    <h3>₹{{ summary.total_cost }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="costChart" height="100"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('costChart').getContext('2d');
+
+    const gradient = ctx.createLinearGradient(0,0,0,400);
+    gradient.addColorStop(0, 'rgba(54, 162, 235, 0.8)');
+    gradient.addColorStop(1, 'rgba(54, 162, 235, 0.3)');
+    const costChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ cost_by_date.keys() | list | tojson }},
+            datasets: [{
+                label: 'Total Cost Per Day',
+                data: {{cost_by_date.values() | list | tojson }},
+                backgroundColor: gradient,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                borderRadius: 8,
+                barThickness: 50
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#fff',
+                    titleColor: '#333',
+                    bodyColor: '#007bff',
+                    borderColor: '#ddd',
+                    borderWidth: 1,
+                    padding: 10,
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date',
+                        color:"#666",
+                        font: { weight: 'bold'}
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Total Cost (₹)',
+                        color: "#666",
+                        font: { weight: 'bold'}
+                    },
+                    ticks: {
+                        stepSize: 1
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)',
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+
+{% endblock %}

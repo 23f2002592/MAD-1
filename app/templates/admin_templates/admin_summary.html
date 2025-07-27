@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="text-center fw-bold text-primary mb-4">📊 Summary Chart</h2>
+    <div class="card shadow-lg p-4 rounded-4" style="background-color: #ffffffcc;">
+        <canvas id="summaryChart" height="400"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('summaryChart').getContext('2d');
+    const summaryChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Total Spots', 'Available Spots', 'Reserved Spots'],
+            datasets: [{
+                label: 'Parking Spot Status',
+                data: [
+                    {{ summary.total_spots }},
+                    {{ summary.available_spots }},
+                    {{ summary.occupied_spots }}
+                ],
+                backgroundColor: [
+                    '#0d6efd',
+                    '#198754',
+                    '#dc3545'
+                ],
+                borderRadius: 12,
+                barThickness: 60
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#333',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    cornerRadius: 8
+                    
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#333',
+                        font: {
+                            weight: '600'
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 5,
+                        color: '#666',
+                    },
+                    grid: {
+                        color: '#ddd'
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}
