@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">User Dashboard</h2>
+
+    {% if active_reservations %}
+        {% for active_reservation in active_reservations %}
+            <div class="alert alert-info color-primary" style="background-color: rgb(183, 232, 182);">
+                <strong>Active Reservation:</strong><br>
+                Lot: {{ active_reservation.spot.lot.location_name }}<br>
+                Spot: ParkingSpot {{ active_reservation.spot.spot_number }}<br>
+                <form action="{{ url_for('user.vacate_spot', reservation_id=active_reservation.id) }}" method="post" class="mt-2">
+                    <button type="submit" class="btn btn-danger">Vacate Spot</button>
+                </form>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <h4 class="mb-3">Available Parking Lots</h4>
+    <div class="row">
+        {% if not lots %}
+            <p class="text-muted">No parking lots available at the moment.</p>
+        {% else %}
+            {% for lot in lots %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ lot.location_name }}</h5>
+                                <p class="card-text">
+                                    Price: ₹{{ lot.price }} per hour<br>
+                                </p>
+
+                                {% set user_reservation = reservation_map.get(lot.id) %}
+                                {% if user_reservation %}
+                                    <!-- <form action="{{ url_for('user.vacate_spot', reservation_id=user_reservation.id) }}" method="post">
+                                        <button type="submit" class="btn btn-danger">Vacate Spot</button>
+                                    </form> -->
+                                    <p class="text-muted">Reserved</p>
+                                {% elif not reservation_map %}
+                                    <form action="{{ url_for('user.reserve_spot', lot_id=lot.id) }}" method="post">
+                                        <button type="submit" class="btn btn-primary">Reserve Spot</button>
+                                    </form>
+                                {% else %}
+                                    <button class="btn btn-secondary" style="background-color: rgb(237, 31, 38);" disabled>Reserved in another lot</button>
+                                {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+    

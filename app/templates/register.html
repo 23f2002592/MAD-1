@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Register</h2>
+<form method="post">
+    <input type="hidden" name="role" value="user">
+    <div class="mb-3">
+        <label for="">Username:</label>
+        <input type="text" name="username" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="">Email:</label>
+        <input type="email" name="email" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="">Password:</label>
+        <input type="password" name="password" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="">Pin Code:</label>
+        <input type="number" name="pincode" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="">Phone Number:</label>
+        <input type="text" name="phone_number" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="">Vehicle Number:</label>
+        <input type="text" name="vehicle_number" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-success">Register</button>
+</form>
+
+{% endblock %}

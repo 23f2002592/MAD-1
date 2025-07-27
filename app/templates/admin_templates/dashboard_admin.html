@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-center fw-bold text-primary mb-4">Admin Dashboard</h2>
+
+<a href="{{ url_for('admin.add_lot') }}" class="btn btn-success mb-3">Add New Parking Lot</a>
+
+<h4>Parking Lots</h4>
+
+{% if lots|length == 0 %}   
+    <div class="alert alert-warning">No parking lots have been created yet.</div>
+{% else %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for lot in lots %}
+            <div class="col">
+                <div class="card border-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ lot.location_name }}</h5>
+                        <p class="card-text">
+                            Price: ₹{{ lot.price }} per hour<br>
+                            Max Spots: {{ lot.max_spots }} <br>
+                            {% set available = lot.spots | selectattr('status', 'equalto', 'A') | list | length %}
+                            Available Spots: <span class="badge bg-success">{{available}}</span>
+                        </p>
+
+                        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-2 mt-3">
+                            {% for spot in lot.spots %}
+                                {% set res = spot_reservation.get(spot.id) %}
+                                <div class="col">
+                                <div class="card text-white {% if spot.status == 'A' %}bg-success{% else %}bg-danger{% endif %}">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title mb-1">Spot #{{ spot.spot_number }}</h6>
+
+                                        {% if res %}
+                                            <p class="card-text small mb-0">
+                                                <strong>User:</strong> {{ res.user.username}} <br>
+                                                <strong>In:</strong> {{ (res.parking_time + timedelta(hours=5, minutes=30)).strftime('%H:%M')}}
+                                                {% if res.leaving_time %}
+                                                    <strong>Out:</strong> {{ (res.leaving_time + timedelta(hours=5, minutes=30)).strftime('%H:%M')}}
+                                                {% else %}
+                                                    <strong>Out:</strong> - 
+                                                {% endif %}
+                                                <strong>Vehicle No. </strong> {{ res.user.vehicle_number }}
+                                            </p>
+                                        {% else %}
+                                            <p class="card-text small">Available</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="card-footer d-flex justify-content-between">
+                            <a href="{{ url_for('admin.edit_lot', lot_id=lot.id)}}" class="btn btn-sm btn-warning">Edit</a>
+                            <a href="{{ url_for('admin.delete_lot', lot_id=lot.id)}}" class="btn btn-sm btn-danger"
+                                onClick="return confirm('Are you sure you want to delete this lot?');">Delete</a>
+                        </div>
+
+                    </div>  
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}
