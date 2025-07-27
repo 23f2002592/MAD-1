@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h3 class="text-center text-primary mb-4">All Reservation History</h3>
+    {% if reservations | length > 0 %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>User</th>
+                        <th>Lot</th>
+                        <th>Spot</th>
+                        <th>Vehicle Number</th>
+                        <th>In-Time</th>
+                        <th>Out-Time</th>
+                        <th>Duration</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for res in reservations %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ res.user.username }}</td>
+                        <td>{{ res.spot.lot.location_name }}</td>
+                        <td>{{ res.spot.spot_number }}</td>
+                        <td>{{ res.user.vehicle_number }}</td>
+                        <td>{{ (res.parking_time + timedelta(hours=5, minutes=30)).strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            {% if res.leaving_time %}
+                                {{ (res.leaving_time + timedelta(hours=5, minutes=30)).strftime('%Y-%m-%d %H:%M') }}
+                            {% else %}
+                                <span class="text-bg-warning badge rounded-pill px-3 py-1">Active</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if res.leaving_time %}
+                                {% set duration = res.leaving_time - res.parking_time %}
+                                {{ "%.2f" | format(duration.total_seconds() / 60) }} mins
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if res.leaving_time %}
+                                ₹{{ '%.2f'| format(res.total_cost)}}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-muted">No reservations found.</p>
+    {% endif %}
+</div>
+{% endblock %}
