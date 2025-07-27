@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h3 class="text-primary fw-bold mb-4">Parking History</h3>
+
+    {% if reservations %}
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-bordered table-hover align-middle mt-3">
+            <thead class="table-light">
+                <tr class="text-center">
+                    <th>#</th>
+                    <th>Spot</th>
+                    <th>Lot</th>
+                    <th>Parked At</th>
+                    <th>Left At</th>
+                    <th>Duration</th>
+                    <th>Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for res in reservations %}
+                <tr class="text-center">
+                    <td>{{ loop.index }}</td>
+                    <td>{{ res.spot.spot_number }}</td>
+                    <td>{{ res.spot.lot.location_name }}</td>
+                    <td>{{ (res.parking_time + timedelta(hours=5, minutes=30)).strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        {% if res.leaving_time %}
+                            {{ (res.leaving_time + timedelta(hours=5, minutes=30)).strftime('%Y-%m-%d %H:%M') }}
+                        {% else %}
+                            <span class="text-bg-warning badge rounded-pill px-3 py-1">Active</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if res.leaving_time %}
+                            {% set duration = res.leaving_time - res.parking_time %}
+                            {{ "%.2f" | format(duration.total_seconds() / 60) }} mins
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if res.leaving_time %}
+                            ₹{{ '%.2f'| format(res.total_cost)}}
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p class="text-muted">No parking history found.</p>
+    {% endif %}
+</div>
+{% endblock %}
