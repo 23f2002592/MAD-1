@@ -4,6 +4,7 @@ from flask_login import login_required, current_user, login_user, logout_user
 from app.models import User, ParkingLot, ParkingSpot, Reservation
 from flask_login import login_required, current_user
 from datetime import timedelta
+from collections import defaultdict
 
 admin_bp = Blueprint('admin', __name__)
 def is_not_admin():
@@ -172,3 +173,28 @@ def delete_lot(lot_id):
 
     flash('Parking lot deleted succesffully.')
     return redirect(url_for('admin.admin_dashboard'))
+
+@admin_bp.route('/admin/view_reservations')
+@login_required
+def view_reservations():
+    if is_not_admin():
+        flash('Access denied.')
+        return redirect(url_for('user.login'))
+
+    reservations = Reservation.query.order_by(Reservation.parking_time.desc()).all()
+
+    total_cost = 0
+    cost_by_date = defaultdict(float)
+    for res in reservations:
+        if res.leaving_time and res.spot and res.spot.lot:
+            date_str = res.parking_time.strftime('%d-%b')
+            duration = (res.leaving_time - res.parking_time).total_seconds() / 3600
+            duration = max(duration, 0.25)
+            cost = round(duration * res.spot.lot.price, 2)
+            total_cost += cost
+            cost_by_date[date_str] += cost
+            res.total_cost = cost
+        else:
+            res.total_cost = None
+
+    return render_template('admin_templates/view_reservations.html', reservations=reservations, timedelta=timedelta, total_cost=total_cost)
