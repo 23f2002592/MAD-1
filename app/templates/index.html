@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="landing-container">
+    <h2 class="welcome-heading">Welcome to the Vehicle Parking App</h2>
+    <p class="subtitle">Smart. Simple. Secure parking for everyone.</p>
+    <div class="button-group">
+        <a href="{{ url_for('user.login') }}" class="btn btn-primary">Login</a>
+        <a href="{{ url_for('user.register') }}" class="btn btn-secondary">Register</a>
+    </div>
+</div>
+{% endblock %}

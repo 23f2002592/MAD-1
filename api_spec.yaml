@@ -1,0 +1,128 @@
+openapi: 3.0.0
+info:
+  title: Vehicle Parking App API
+  version: 1.0.0
+  description: API documentation for the Vehicle Parking App
+
+paths:
+  /register:
+    post:
+      summary: User registration
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username: { type: string }
+                email: { type: string }
+                password: { type: string }
+                pin_code: { type: string }
+                phone_number: { type: string }
+                vehicle_number: { type: string }
+      responses:
+        '302':
+          description: Redirect to login after successful registration
+
+  /login:
+    post:
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username: { type: string }
+                password: { type: string }
+      responses:
+        '302':
+          description: Redirect to dashboard after successful login
+
+  /logout:
+    get:
+      summary: User logout
+      responses:
+        '302':
+          description: Redirect to homepage
+
+  /reserve/{lot_id}:
+    post:
+      summary: Reserve a parking spot in a lot
+      parameters:
+        - name: lot_id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '302':
+          description: Redirect to dashboard
+
+  /vacate/{reservation_id}:
+    post:
+      summary: Vacate a reserved spot
+      parameters:
+        - name: reservation_id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '302':
+          description: Spot vacated, redirect to dashboard
+
+  /admin/add_lot:
+    post:
+      summary: Admin adds a parking lot
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                price: { type: number }
+                address: { type: string }
+                pin: { type: string }
+                max_spots: { type: integer }
+      responses:
+        '302':
+          description: Lot and spots added; redirect to dashboard
+
+  /admin/edit_lot/{lot_id}:
+    post:
+      summary: Admin edits parking lot
+      parameters:
+        - name: lot_id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                price: { type: number }
+                address: { type: string }
+                pin: { type: string }
+                max_spots: { type: integer }
+      responses:
+        '302':
+          description: Lot updated; redirect to dashboard
+
+  /admin/delete_lot/{lot_id}:
+    get:
+      summary: Admin deletes a parking lot
+      parameters:
+        - name: lot_id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '302':
+          description: Lot deleted; redirect to dashboard
